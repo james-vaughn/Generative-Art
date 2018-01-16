@@ -7,10 +7,10 @@ const filename = "langston.png";
 const outputImageFile = fs.createWriteStream(__dirname + "/../output/" + filename);
 
 // Create the play board
-const width = 100,
-      height = 100,
-      steps = 1000000,
-      num_ants = 5;
+const width = 1000,
+      height = 1000,
+      steps = 100000000,
+      num_ants = 50;
 
 const grid = new Grid(width, height, num_ants);
 grid.simulate(steps);
