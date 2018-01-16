@@ -4,7 +4,10 @@ class Grid {
     constructor(width, height, num_ants) {
         this.width = width;
         this.height = height;
-        this.grid = Array(height).fill(Array(width).fill(0));
+        this.grid = [];
+        for (let i = 0; i < height; i ++) {
+            this.grid[i] = Array(width).fill(-1);
+        }
 
         this.ants = [];
 
@@ -13,7 +16,7 @@ class Grid {
             const ant = new Ant(Math.floor(Math.random() * width),
                 Math.floor(Math.random() * height),
                 Ant.randomDirection(),
-                i+1);
+                i);
             this.ants.push(ant);
             this.grid[ant.y][ant.x] = ant.id;
         }
@@ -30,12 +33,14 @@ class Grid {
                 // turn it appropriately
                 if (this.grid[y][x] === ant.id) {
                     ant.turn("left");
-                } else {
-                    ant.turn("right");
+                    this.grid[y][x] = -1;
+                } else if(this.grid[y][x] === -1) {
+                    this.grid[y][x] = ant.id;
                 }
-
-                //mark the grid
-                this.grid[y][x] = ant.id;
+                else {
+                    ant.turn("right");
+                    this.grid[y][x] = ant.id;
+                }
             }
         }
     }

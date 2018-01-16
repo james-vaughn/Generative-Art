@@ -8,10 +8,14 @@
   "author": "James Vaughn",
   "repository": {
     "type": "git",
-    "url": "https://github.com/james-vaughn/Generative-Art.git"
+    "url": "git+https://github.com/james-vaughn/Generative-Art.git"
   },
   "license": "ISC",
   "dependencies": {
     "canvas": "^1.6.9"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/james-vaughn/Generative-Art/issues"
+  },
+  "homepage": "https://github.com/james-vaughn/Generative-Art#readme"
 }
