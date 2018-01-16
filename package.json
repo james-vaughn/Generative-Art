@@ -2,10 +2,16 @@
   "name": "generative_art",
   "version": "1.0.0",
   "description": "App that creates or alters art through various algorithms",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "James Vaughn",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/james-vaughn/Generative-Art.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "canvas": "^1.6.9"
+  }
 }
