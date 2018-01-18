@@ -39,7 +39,7 @@ class Grid {
                 }
                 else {
                     ant.turn("right");
-                    this.grid[y][x] = ant.id;
+                    // this.grid[y][x] = ant.id;
                 }
             }
         }
