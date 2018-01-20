@@ -10,7 +10,7 @@ const outputImageFile = fs.createWriteStream(__dirname + "/../output/" + filenam
 // Create the play board
 const width = 1000,
       height = 1000,
-      steps = 5000000,
+      steps = 1000000,
       num_ants = 10;
 
 const grid = new Grid(width, height, num_ants);
