@@ -1,16 +1,15 @@
 class Ant {
-    constructor(x, y, dir, id) {
-        this.x = x;
-        this.y = y;
+    constructor(point, dir, id) {
+        this.point = point
         this.dir = dir;
         this.id = id;
     }
 
     canMoveForward(maxX, maxY) {
-        return (this.dir === "up" && this.y > 0) ||
-               (this.dir === "left" && this.x > 0) ||
-               (this.dir === "right" && this.x < maxX) ||
-               (this.dir === "down" && this.y < maxY);
+        return (this.dir === "up" && this.point.y > 0) ||
+               (this.dir === "left" && this.point.x > 0) ||
+               (this.dir === "right" && this.point.x < maxX) ||
+               (this.dir === "down" && this.point.y < maxY);
     }
 
     // Returns the new coordinates
@@ -26,20 +25,20 @@ class Ant {
 
         switch (this.dir) {
             case "up":
-                this.y -= 1;
+                this.point.y -= 1;
                 break;
             case "left":
-                this.x -= 1;
+                this.point.x -= 1;
                 break;
             case "down":
-                this.y += 1;
+                this.point.y += 1;
                 break;
             case "right":
-                this.x += 1;
+                this.point.x += 1;
                 break;
         }
 
-        return [this.x, this.y];
+        return this.point;
     }
 
     turn(direction) {
