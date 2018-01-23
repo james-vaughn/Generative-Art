@@ -4,14 +4,14 @@ const fs = require("fs");
 const {Grid} = require("./grid");
 const {Color} = require("../lib/color");
 
-const filename = "langston.png";
+const filename = "termite.png";
 const outputImageFile = fs.createWriteStream(__dirname + "/../output/" + filename);
 
 // Create the play board
 const width = 1000,
       height = 1000,
       steps = 500000,
-      num_ants = 10;
+      num_ants = 25;
 
 const grid = new Grid(width, height, num_ants);
 grid.simulate(steps);
@@ -34,10 +34,10 @@ context.fillStyle = `rgba(${colors[0].r}, ${colors[0].g}, ${colors[0].b}, ${colo
 context.fillRect(0, 0, canvas.width, canvas.height);
 
 // smoothing
-for (let smoothing_iter = 0; smoothing_iter < 20; smoothing_iter++) {
+for (let smoothing_iter = 0; smoothing_iter < 5; smoothing_iter++) {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            grid.grid[y][x] = avg_ant_val(grid, x, y, 3);
+            grid.grid[y][x] = avg_ant_val(grid, x, y, 4);
         }
     }
 }
@@ -65,14 +65,9 @@ pngStream.on("data", function (chunk) {
 function avg_ant_val(grid, x, y, radius) {
     neighboring_ants = [];
 
-    // remove rim edge cases
-    if(!(x >= radius && x < width - radius && y >= radius && y < height - radius)) {
-        return grid.grid[y][x];
-    }
-
     // add all of the neighboring pixels
-    for(let y_val = y - radius; y_val <= y + radius; y_val++) {
-        for(let x_val = x - radius; x_val <= x + radius; x_val++) {
+    for(let y_val = Math.max(0, y - radius); y_val <= Math.min(height - 1, y + radius); y_val++) {
+        for(let x_val = Math.max(0, x - radius); x_val <= Math.min(width -1, x + radius); x_val++) {
             neighboring_ants.push(grid.grid[y_val][x_val]);
         }
     }

@@ -15,6 +15,7 @@ class Ant {
     // Returns the new coordinates
     move(maxX, maxY){
         if(this.canMoveForward(maxX, maxY) === false) {
+            // this.turn("right");
             if(Math.random() < .5) {
                 this.turn("right");
             } else {
