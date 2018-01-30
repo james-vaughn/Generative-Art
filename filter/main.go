@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/fogleman/gg"
+	noise "github.com/ojrac/opensimplex-go"
 	"image/color"
 	"os"
 	"log"
@@ -39,5 +40,7 @@ func drawBackground(context *gg.Context) {
 	context.SetFillStyle(gradient)
 	context.DrawRectangle(0, 0, WIDTH, HEIGHT)
 	context.Fill()
-
+	
+	noiseGen := noise.New()
+	_ = noiseGen
 }

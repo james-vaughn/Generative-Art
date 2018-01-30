@@ -18,6 +18,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/ojrac/opensimplex-go"
+  packages = ["."]
+  revision = "c0d2b8b324684d1e69e72eaf01f69ff700e3396a"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/image"
   packages = [
     "font",
@@ -30,6 +36,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "fab42df1653af9b737cc009202f5009b24854089dee6fd7f6e93c2f9543a614a"
+  inputs-digest = "ecc9f14c5d5d6de5fe156b89db24db6486c69d11e07106405edbc3ae97096baf"
   solver-name = "gps-cdcl"
   solver-version = 1
