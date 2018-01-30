@@ -31,6 +31,7 @@ class Grid {
 
                 // turn it appropriately
                 if (this.grid[point.y][point.x] === ant.id) {
+
                     if(type === "random") {
                         if(Math.random() < .5) {
                             ant.turn("right");
@@ -40,10 +41,12 @@ class Grid {
                     } else if(type === "rigid") {
                      ant.turn("left");
                     }
+
                 } else if(this.grid[point.y][point.x] === -1) {
                     this.grid[point.y][point.x] = ant.id;
                 }
                 else {
+
                     if(type === "random") {
                         if(Math.random() < .5) {
                             ant.turn("right");
@@ -57,6 +60,7 @@ class Grid {
                     if(overwrite === true) {
                                 this.grid[point.y][point.x] = ant.id;
         		    }
+
                 }
             }
         }
