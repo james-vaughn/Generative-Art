@@ -12,8 +12,8 @@ const width = 1000,
       height = 1000,
       steps = 500000,
       num_ants = 16,
-      simu_type = "random",
-      overwrite = true;
+      simu_type = "rigid",
+      overwrite = false;
 
 const grid = new Grid(width, height, num_ants);
 grid.simulate(steps, simu_type, overwrite);
