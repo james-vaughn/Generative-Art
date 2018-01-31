@@ -29,12 +29,17 @@ func main() {
 	img, _, _ := image.Decode(imageReader)
 	context.DrawImage(img, 0, 0)
 
+	imageReader2, _ := os.Open("../output/termite2.png")
+
+	img2, _, _ := image.Decode(imageReader2)
+	context.DrawImage(img2, 0, 0)
+
 	context.SavePNG("../output/filter_with_texture.png")
 }
 
 // Draws the background for the image to go over
 func drawBackground(context *gg.Context) {
-	drawSimplexNoiseBackground(context)
+	drawGradientBackground(context)
 }
 
 func drawGradientBackground (context *gg.Context) {

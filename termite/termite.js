@@ -4,7 +4,7 @@ const fs = require("fs");
 const {Grid} = require("./grid");
 const {Color} = require("../lib/color");
 
-const filename = "termite.png";
+const filename = "termite2.png";
 const outputImageFile = fs.createWriteStream(__dirname + "/../output/" + filename);
 
 // Create the play board
