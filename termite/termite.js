@@ -14,9 +14,9 @@ const width = 1000,
 const parametersBackground = {
     "steps" : 1000000,
     "num_ants" : 16,
-    "simu_type" : "rigid",
+    "simu_type" : "random",
     "overwrite" : false,
-    "alpha" : .3
+    "alpha" : .35
 };
 
 const parametersForeground = {

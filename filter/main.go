@@ -67,6 +67,7 @@ func overlayImage(context *gg.Context, filename string) error {
 
 // Draws the background for the image to go over
 func drawBackground(context *gg.Context) {
+	// drawGradientBackground(context)	
 	drawSimplexNoiseBackground(context)
 }
 
@@ -92,7 +93,8 @@ func drawSimplexNoiseBackground (context *gg.Context) {
 			x_val := float64(scale * x)/WIDTH
 			y_val := float64(scale * y)/HEIGHT
 
-			n := (noiseGen.Eval2(x_val, y_val) + 1) * (255 / 2)
+			//calc noise but limit range of values to reduce intensity
+			n := (noiseGen.Eval2(x_val, y_val) + 1) * (215 / 2) + 80 / 2
 			noiseVal := uint8(n)
 			context.SetColor(color.RGBA{ noiseVal, noiseVal, noiseVal, 255})
 			context.SetPixel(x, y)
