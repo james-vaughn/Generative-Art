@@ -14,9 +14,9 @@ const width = 1000,
 const parametersBackground = {
     "steps" : 1000000,
     "num_ants" : 16,
-    "simu_type" : "random",
-    "overwrite" : true,
-    "alpha" : .4
+    "simu_type" : "rigid",
+    "overwrite" : false,
+    "alpha" : .3
 };
 
 const parametersForeground = {
@@ -24,10 +24,13 @@ const parametersForeground = {
     "num_ants" : 20,
     "simu_type" : "random",
     "overwrite" : true,
-    "alpha" : .25
+    "alpha" : .35
 };
 
+console.log("Generating background...");
 genTermiteArt(backgroundImage, parametersBackground);
+
+console.log("Generating foreground...");
 genTermiteArt(foregroundImage, parametersForeground);
 
 

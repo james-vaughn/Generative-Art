@@ -16,6 +16,7 @@ const (
 )
 
 func main() {
+	log.Println("Applying filter...")
 
 	context := gg.NewContext(WIDTH, HEIGHT)
 
