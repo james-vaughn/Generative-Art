@@ -4,7 +4,7 @@ const fs = require("fs");
 const {Grid} = require("./grid");
 const {Color} = require("../lib/color");
 
-const filename = "termite2.png";
+const filename = "termite3.png";
 const outputImageFile = fs.createWriteStream(__dirname + "/../output/" + filename);
 
 // Create the play board
@@ -12,8 +12,8 @@ const width = 1000,
       height = 1000,
       steps = 500000,
       num_ants = 16,
-      simu_type = "rigid",
-      overwrite = false;
+      simu_type = "random",
+      overwrite = true;
 
 const grid = new Grid(width, height, num_ants);
 grid.simulate(steps, simu_type, overwrite);

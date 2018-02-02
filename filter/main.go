@@ -20,26 +20,51 @@ func main() {
 
 	drawBackground(context)
 
-	// Overlay image
-	imageReader, err := os.Open("../output/termite.png")
+	// Overlay images
+	err := overlayImages(context, []string {
+		"../output/termite.png",
+		"../output/termite2.png",
+		"../output/termite3.png",
+	})
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	img, _, _ := image.Decode(imageReader)
-	context.DrawImage(img, 0, 0)
-
-	imageReader2, _ := os.Open("../output/termite2.png")
-
-	img2, _, _ := image.Decode(imageReader2)
-	context.DrawImage(img2, 0, 0)
-
 	context.SavePNG("../output/filter_with_texture.png")
+}
+
+func overlayImages(context *gg.Context, imageNames []string)  error {
+	for _, imageFileName := range imageNames {
+		if err := overlayImage(context, imageFileName); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func overlayImage(context *gg.Context, filename string) error {
+	imageReader, openErr := os.Open(filename)
+
+	if openErr != nil {
+		return openErr
+	}
+
+	img, _, decodeErr := image.Decode(imageReader)
+
+	if decodeErr != nil {
+		return decodeErr
+	}
+
+	context.DrawImage(img, 0, 0)
+	
+	return nil
 }
 
 // Draws the background for the image to go over
 func drawBackground(context *gg.Context) {
-	drawGradientBackground(context)
+	drawSimplexNoiseBackground(context)
 }
 
 func drawGradientBackground (context *gg.Context) {
