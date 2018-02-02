@@ -7,6 +7,7 @@ import (
 	"os"
 	"log"
 	"image"
+	"time"
 )
 
 const (
@@ -19,19 +20,20 @@ func main() {
 	context := gg.NewContext(WIDTH, HEIGHT)
 
 	drawBackground(context)
+	context.SavePNG("output/filter.png")
 
 	// Overlay images
 	err := overlayImages(context, []string {
-		"../output/termite.png",
-		"../output/termite2.png",
-		"../output/termite3.png",
+		"output/termite.png",
+		"output/termite2.png",
+		//"../output/termite3.png",
 	})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	context.SavePNG("../output/filter_with_texture.png")
+	context.SavePNG("output/filter_with_texture.png")
 }
 
 func overlayImages(context *gg.Context, imageNames []string)  error {
@@ -77,8 +79,12 @@ func drawGradientBackground (context *gg.Context) {
 }
 
 func drawSimplexNoiseBackground (context *gg.Context) {
-	noiseGen := noise.NewWithSeed(0) // TODO use random seed
-	scale := 10
+	seed := int64(time.Now().UTC().UnixNano())
+	noiseGen := noise.NewWithSeed(seed)
+	
+	log.Printf("Seed for noise: %d", seed)
+
+	scale := 4
 
 	for y := 0; y < HEIGHT; y++ {
 		for x := 0; x < WIDTH; x++ {

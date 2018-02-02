@@ -11,7 +11,7 @@ class Grid {
             this.grid[i] = Array(width).fill(-1);
         }
 
-        this.ants = this.generateAnts_RandomApproach(width, height, num_ants, this.grid);
+        this.ants = this.generateAnts_ClusterApproach(width, height, num_ants, this.grid);
     }
 
     // Run the algorithm for steps number of steps
