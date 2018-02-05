@@ -82,6 +82,7 @@ func drawGradientBackground (context *gg.Context) {
 
 func drawSimplexNoiseBackground (context *gg.Context) {
 	seed := int64(time.Now().UTC().UnixNano())
+        // good seeds: 1517604155637716269
 	noiseGen := noise.NewWithSeed(seed)
 	
 	log.Printf("Seed for noise: %d", seed)
