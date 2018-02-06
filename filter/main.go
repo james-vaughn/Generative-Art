@@ -7,6 +7,7 @@ import (
 	"os"
 	"log"
 	"image"
+	"time"
 )
 
 const (
@@ -15,23 +16,25 @@ const (
 )
 
 func main() {
+	log.Println("Applying filter...")
 
 	context := gg.NewContext(WIDTH, HEIGHT)
 
 	drawBackground(context)
+	context.SavePNG("output/filter.png")
 
 	// Overlay images
 	err := overlayImages(context, []string {
-		"../output/termite.png",
-		"../output/termite2.png",
-		"../output/termite3.png",
+		"output/termite.png",
+		"output/termite2.png",
+		//"../output/termite3.png",
 	})
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	context.SavePNG("../output/filter_with_texture.png")
+	context.SavePNG("output/filter_with_texture.png")
 }
 
 func overlayImages(context *gg.Context, imageNames []string)  error {
@@ -64,6 +67,7 @@ func overlayImage(context *gg.Context, filename string) error {
 
 // Draws the background for the image to go over
 func drawBackground(context *gg.Context) {
+	// drawGradientBackground(context)	
 	drawSimplexNoiseBackground(context)
 }
 
@@ -77,15 +81,21 @@ func drawGradientBackground (context *gg.Context) {
 }
 
 func drawSimplexNoiseBackground (context *gg.Context) {
-	noiseGen := noise.NewWithSeed(0) // TODO use random seed
-	scale := 10
+	seed := int64(time.Now().UTC().UnixNano())
+        // good seeds: 1517604155637716269
+	noiseGen := noise.NewWithSeed(seed)
+	
+	log.Printf("Seed for noise: %d", seed)
+
+	scale := 4
 
 	for y := 0; y < HEIGHT; y++ {
 		for x := 0; x < WIDTH; x++ {
 			x_val := float64(scale * x)/WIDTH
 			y_val := float64(scale * y)/HEIGHT
 
-			n := (noiseGen.Eval2(x_val, y_val) + 1) * (255 / 2)
+			//calc noise but limit range of values to reduce intensity
+			n := (noiseGen.Eval2(x_val, y_val) + 1) * (215 / 2) + 80 / 2
 			noiseVal := uint8(n)
 			context.SetColor(color.RGBA{ noiseVal, noiseVal, noiseVal, 255})
 			context.SetPixel(x, y)
