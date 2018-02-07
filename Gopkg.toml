@@ -36,3 +36,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/ojrac/opensimplex-go"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/go-gl/gl"
