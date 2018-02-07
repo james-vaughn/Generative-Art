@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	WIDTH  = 1000
-	HEIGHT = 1000
+	WIDTH  = 1920
+	HEIGHT = 1080
 )
 
 func main() {
@@ -72,7 +72,7 @@ func drawBackground(context *gg.Context) {
 }
 
 func drawGradientBackground (context *gg.Context) {
-	gradient := gg.NewLinearGradient(0, 0, 1000, 1000)
+	gradient := gg.NewLinearGradient(0, 0, WIDTH, HEIGHT)
 	gradient.AddColorStop(0, color.White)
 	gradient.AddColorStop(1, color.Black)
 	context.SetFillStyle(gradient)

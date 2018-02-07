@@ -9,30 +9,30 @@ const backgroundImage = fs.createWriteStream(__dirname + "/../output/termite.png
 const foregroundImage = fs.createWriteStream(__dirname + "/../output/termite2.png");
 
 // Create the play board
-const width = 1000,
-      height = 1000;
+const width = 1920,
+      height = 1080;
 
 const parametersBackground = {
-    "steps" : 1000000,
+    "steps" : 2000000,
     "num_ants" : 16,
     "simu_type" : "random",
     "overwrite" : false,
-    "alpha" : .6
+    "alpha" : .4
 };
 
 const parametersForeground = {
-    "steps" : 1000000,
-    "num_ants" : 20,
-    "simu_type" : "rigid",
+    "steps" : 2000000,
+    "num_ants" : 16,
+    "simu_type" : "random",
     "overwrite" : true,
-    "alpha" : .7
+    "alpha" : .6
 };
 
 console.log("Generating background...");
 genTermiteArt(backgroundImage, parametersBackground);
 
 console.log("Generating foreground...");
-genTermiteArt(foregroundImage, parametersForeground);
+genTermiteArt(foregroundImage, parametersForeground, true);
 
 
 function smoothGrid(grid, iter, radius) {

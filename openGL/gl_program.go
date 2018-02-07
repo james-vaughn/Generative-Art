@@ -3,6 +3,7 @@ package main
 import (
 	"strings"
 	"fmt"
+	"io/ioutil"
 	"github.com/go-gl/gl/v4.5-core/gl"
 )
 
@@ -16,7 +17,7 @@ type Program struct {
 func NewProgram(vertShaderFile, fragShaderFile string) (*Program, error) {
 	vertexShaderSource, _ := sourceFromFile(vertShaderFile)
 	fragmentShaderSource, _ := sourceFromFile(fragShaderFile)
-
+	
 	vertexShader, err := compileShader(vertexShaderSource, gl.VERTEX_SHADER)
 	if err != nil {
 		return nil, err
@@ -50,6 +51,7 @@ func NewProgram(vertShaderFile, fragShaderFile string) (*Program, error) {
 }
 
 func (p *Program) Delete() {
+	fmt.Println("Deleting program")
 	gl.DeleteShader(p.vertShaderHandle)
 	gl.DeleteShader(p.fragShaderHandle)
 	gl.DeleteProgram(p.programHandle)
@@ -57,7 +59,12 @@ func (p *Program) Delete() {
 
 
 func sourceFromFile(shaderSourceFile string) (string, error) {
-	return "", nil
+	shader, err := ioutil.ReadFile(shaderSourceFile)
+	if err != nil {
+		return "", err
+	}
+	shaderStr := string(shader) + "\x00"
+	return shaderStr, nil
 }
 
 func compileShader(source string, shaderType uint32) (uint32, error) {

@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"runtime"
-
+	"time"
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
@@ -35,12 +35,18 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//program, err := NewProgram("vert.shader", "frag.shader")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-	//
-	//defer program.Delete()
+	program, err := NewProgram("vert.shader", "frag.shader")
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	defer program.Delete()
+
+	for !window.ShouldClose() {
+		time.Sleep(1 * time.Second)
+		window.SwapBuffers()
+		glfw.PollEvents()
+	}
 
 }
 
