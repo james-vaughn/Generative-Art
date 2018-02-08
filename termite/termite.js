@@ -88,7 +88,7 @@ function avgAntVal(grid, x, y, radius) {
     return result;
 }
 
-function genTermiteArt(outputImageFile, parameters, smoothingPrefix, reduce=false) {
+function genTermiteArt(outputImageFile, parameters, filePrefix, reduce=false) {
     const numAnts = parameters["num_ants"];
     const alpha = parameters["alpha"];
 
@@ -116,11 +116,11 @@ function genTermiteArt(outputImageFile, parameters, smoothingPrefix, reduce=fals
         }
     });
 
-    const grid = new Grid(width, height, numAnts, colors);
+    const grid = new Grid(width, height, numAnts, colors, filePrefix);
     grid.simulate(parameters["steps"], parameters["simu_type"], parameters["overwrite"]);
 
 
-    smoothGrid(grid, 10, 6, smoothingPrefix);
+    smoothGrid(grid, 10, 6, filePrefix);
 
     //return the colors back to normal alpha level
     grid.colors.map(color => {

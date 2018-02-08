@@ -4,11 +4,12 @@ const {randSignedInt} = require("../lib/random");
 const {gridMidsimulationDraw} = require("./drawing");
 
 class Grid {
-    constructor(width, height, num_ants, colors) {
+    constructor(width, height, num_ants, colors, filePrefix) {
         this.width = width;
         this.height = height;
         this.num_ants = num_ants;
         this.colors = colors;
+		this.filePrefix = filePrefix;
         this.grid = [];
         for (let i = 0; i < height; i ++) {
             this.grid[i] = Array(width).fill(-1);
@@ -25,10 +26,13 @@ class Grid {
         if(type !== "random" && type !== "rigid") {
             throw "Bad simulation type";
         }
-
+		
+		let captureAt = 100;
         for (let i = 0; i < steps; i++) {
-            if (steps !== 0 && steps % 50000 === 0) {
-                gridMidsimulationDraw(this, `step${steps}.png`);
+            if (i !== 0 && i === captureAt) {
+				console.log(`\tCreating mid-simulation image for step ${i}`);
+                gridMidsimulationDraw(this, `${this.filePrefix}step${i}.png`);
+				captureAt *= 5;
             }
 
             for(const ant of this.ants) {

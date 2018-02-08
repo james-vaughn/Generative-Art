@@ -2,7 +2,7 @@ const fs = require("fs");
 const Canvas = require("canvas");
 
 function gridMidsimulationDraw(grid, filename) {
-    const imageFile = fs.createWriteStream(__dirname + "/../output/" + filename);
+    const imageFile = fs.createWriteStream(filename);
     drawImage(grid, imageFile);
 }
 
@@ -39,6 +39,10 @@ function drawImage(grid, outputImageFile) {
     pngStream.on("data", function (chunk) {
         outputImageFile.write(chunk);
     });
+
+	pngStream.on("finish", function () {
+		outputImageFile.end();	
+	});
 }
 
 exports.gridMidsimulationDraw = gridMidsimulationDraw;
