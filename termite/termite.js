@@ -1,9 +1,8 @@
 //modules
-const Canvas = require("canvas");
 const fs = require("fs");
 const {Grid} = require("./grid");
 const {Color} = require("../lib/color");
-//const {randInt} = require("../lib/random");
+const {drawImage} = require("./drawing");
 
 const backgroundImage = fs.createWriteStream(__dirname + "/../output/termite.png");
 const foregroundImage = fs.createWriteStream(__dirname + "/../output/termite2.png");
@@ -29,21 +28,31 @@ const parametersForeground = {
 };
 
 console.log("Generating background...");
-genTermiteArt(backgroundImage, parametersBackground);
+genTermiteArt(backgroundImage, parametersBackground, __dirname + "/../output/bg_");
 
 console.log("Generating foreground...");
-genTermiteArt(foregroundImage, parametersForeground, true);
+genTermiteArt(foregroundImage, parametersForeground, __dirname + "/../output/fg_", true);
 
 
-function smoothGrid(grid, iter, radius) {
+function smoothGrid(grid, iter, radius, outputImgPrefix) {
     // smoothing
     for (let smoothing_iter = 0; smoothing_iter < iter; smoothing_iter++) {
+        //generate image for every other smoothing iteration
+        if(smoothing_iter % 2 === 0) {
+            console.log(`\tGenerating smoothing image ${smoothing_iter}`);
+
+            const imageFile = fs.createWriteStream(`${outputImgPrefix}smootingIter${smoothing_iter}.png`);
+            drawImage(grid, imageFile);
+        }
+
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 grid.grid[y][x] = avgAntVal(grid, x, y, radius);
             }
         }
     }
+
+
 }
 
 function avgAntVal(grid, x, y, radius) {
@@ -79,23 +88,13 @@ function avgAntVal(grid, x, y, radius) {
     return result;
 }
 
-function drawPixel(context, x, y, color) {
-    context.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
-    context.fillRect(x, y, 1, 1);
-}
-
-function genTermiteArt(outputImageFile, parameters, reduce=false) {
+function genTermiteArt(outputImageFile, parameters, smoothingPrefix, reduce=false) {
     const numAnts = parameters["num_ants"];
-
-    const grid = new Grid(width, height, numAnts);
-    grid.simulate(parameters["steps"], parameters["simu_type"], parameters["overwrite"]);
-
-
-    // Draw the image from the grid
+    const alpha = parameters["alpha"];
 
     // generate the colors
-    colors = [];
-    colors.push(Color.random(parameters["alpha"]));
+    let colors = [];
+    colors.push(Color.random(alpha));
 
     for(let i = 0; i < numAnts - 1; i++) {
         colors.push(Color.mutation_of(colors[i]));
@@ -110,29 +109,25 @@ function genTermiteArt(outputImageFile, parameters, reduce=false) {
 
     }
 
-    // set up the canvas
-    const canvas = new Canvas(width, height);
-    const context = canvas.getContext("2d");
-    context.fillStyle = `rgba(${colors[0].r}, ${colors[0].g}, ${colors[0].b}, ${colors[0].a})`;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-
-    smoothGrid(grid, 5, 6);
-
-    // drawing
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const ant = grid.grid[y][x];
-
-            if (ant === -1) continue;
-
-            const color = colors[ant];
-            drawPixel(context, x, y, color);
+    //temporarily make the colors opaque
+    colors.map(color => {
+        if(color.a > 0) {
+            color.a = 1
         }
-    }
-
-    let pngStream = canvas.pngStream();
-
-    pngStream.on("data", function (chunk) {
-        outputImageFile.write(chunk);
     });
+
+    const grid = new Grid(width, height, numAnts, colors);
+    grid.simulate(parameters["steps"], parameters["simu_type"], parameters["overwrite"]);
+
+
+    smoothGrid(grid, 10, 6, smoothingPrefix);
+
+    //return the colors back to normal alpha level
+    grid.colors.map(color => {
+        if(color.a > 0) {
+            color.a = alpha
+        }
+    });
+
+    drawImage(grid, outputImageFile, colors);
 }

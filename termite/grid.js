@@ -1,11 +1,14 @@
 const {Ant} = require("./ant");
 const {Point} = require("../lib/point");
 const {randSignedInt} = require("../lib/random");
+const {gridMidsimulationDraw} = require("./drawing");
 
 class Grid {
-    constructor(width, height, num_ants) {
+    constructor(width, height, num_ants, colors) {
         this.width = width;
         this.height = height;
+        this.num_ants = num_ants;
+        this.colors = colors;
         this.grid = [];
         for (let i = 0; i < height; i ++) {
             this.grid[i] = Array(width).fill(-1);
@@ -24,6 +27,10 @@ class Grid {
         }
 
         for (let i = 0; i < steps; i++) {
+            if (steps !== 0 && steps % 50000 === 0) {
+                gridMidsimulationDraw(this, `step${steps}.png`);
+            }
+
             for(const ant of this.ants) {
 
                 // advance the ant
