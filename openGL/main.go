@@ -42,8 +42,15 @@ func main() {
 	
 	defer program.Delete()
 
+	gl.UseProgram(program.programHandle)
+	gl.PolygonMode(gl.FRONT_AND_BACK, gl.FILL)
+	gl.ClearColor(1.0, 0, 0, 1.0)
+
 	for !window.ShouldClose() {
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		time.Sleep(1 * time.Second)
+		gl.UseProgram(program.programHandle)
+		gl.DrawArrays(gl.TRIANGLES, 0, 3)
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
