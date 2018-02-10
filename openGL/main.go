@@ -81,7 +81,7 @@ func main() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		gl.UseProgram(program.programHandle)
 	
-		z += .025
+		z += .01
 		makePoints(z)
 		gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(verts)*4, gl.Ptr(verts))
 		gl.BindVertexArray(vao)
@@ -113,21 +113,21 @@ func createWindow() (*glfw.Window, error) {
 func makePoints (z float64) {
 	scale := float32(1.5)
 
-	x_incr := float32(2.0) / float32(WIDTH)
-	y_incr := float32(2.0) / float32(HEIGHT)
+	x_incr := (float32(2.0) / float32(WIDTH)) + .002
+	y_incr := (float32(2.0) / float32(HEIGHT)) + .002
 
 	idx := 0
-	for y := float32(-1.0); y < 1.0 - y_incr; y += y_incr {
+	for y := float32(-1.0 + y_incr); y < 1.0 - y_incr; y += y_incr {
 		//degenerate beginning triangle
 		x_val := float64(scale * -1.0)
 		y_val := float64(scale * y)		
 
-		verts[idx] = float32(-1.0)
+		verts[idx] = float32(-1.0 + x_incr)
 		verts[idx+1] = y
 		verts[idx+2] = float32(noiseGen.Eval3(x_val, y_val, z))
 		idx += 3
 
-		for x := float32(-1.0); x < 1.0; x += x_incr {
+		for x := float32(-1.0 + x_incr); x < 1.0; x += x_incr {
 
 			x_val := float64(scale * x)
 			y_val1 := float64(scale * y)
