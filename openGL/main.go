@@ -12,20 +12,15 @@ import (
 const (
 	WIDTH  int = 1000
 	HEIGHT int = 1000
+
 )
 
-var verts = []float32 {
-	//1st triangle
-	-.4, 0.1, -1,
-	0.0, 1.0, 0,
-	.4, 0.1, 1,
+var (
+	seed int64 = int64(time.Now().UTC().UnixNano())
+	verts []float32 = make([]float32, 1.5*2*WIDTH*HEIGHT*3)
+	noiseGen *noise.Noise = noise.NewWithSeed(seed)
+)
 
-	//2nd triangle
-	-.4, -0.1, -1,
-	0.0, -1.0, 0,
-	.4, -0.1, 1,
-
-}
 
 func init() {
 	runtime.LockOSThread()
@@ -65,7 +60,9 @@ func main() {
 	//vertex crap
 	//Pull this out into a different file
 
-	vs := makePoints()
+	z := 0.0
+
+	makePoints(z)
 
 	var vao uint32
 	gl.GenVertexArrays(1, &vao)
@@ -74,7 +71,7 @@ func main() {
 	var vbo uint32
 	gl.GenBuffers(1, &vbo)
 	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
-	gl.BufferData(gl.ARRAY_BUFFER, len(vs)*4, gl.Ptr(vs), gl.STATIC_DRAW)
+	gl.BufferData(gl.ARRAY_BUFFER, len(verts)*4, gl.Ptr(verts), gl.DYNAMIC_DRAW)
 
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, gl.PtrOffset(0))
@@ -83,8 +80,12 @@ func main() {
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		gl.UseProgram(program.programHandle)
+	
+		z += .025
+		makePoints(z)
+		gl.BufferSubData(gl.ARRAY_BUFFER, 0, len(verts)*4, gl.Ptr(verts))
 		gl.BindVertexArray(vao)
-		gl.DrawArrays(gl.TRIANGLE_STRIP, 0, int32(len(vs) / 3))
+		gl.DrawArrays(gl.TRIANGLE_STRIP, 0, int32(len(verts) / 3))
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}
@@ -108,27 +109,45 @@ func createWindow() (*glfw.Window, error) {
 
 }
 
-func makePoints () []float32{
-	verts := make([]float32, 0)
-
-	seed := int64(time.Now().UTC().UnixNano())
-	noiseGen := noise.NewWithSeed(seed)
-	
-	log.Printf("Seed for noise: %d", seed)
-
+//http://www.learnopengles.com/tag/triangle-strips/
+func makePoints (z float64) {
 	scale := float32(1.5)
 
 	x_incr := float32(2.0) / float32(WIDTH)
 	y_incr := float32(2.0) / float32(HEIGHT)
-	for y := float32(-1.0); y < 1.0 - y_incr; y+= y_incr {
-		for x := float32(-1.0); x < 1.0; x+= x_incr {
+
+	idx := 0
+	for y := float32(-1.0); y < 1.0 - y_incr; y += y_incr {
+		//degenerate beginning triangle
+		x_val := float64(scale * -1.0)
+		y_val := float64(scale * y)		
+
+		verts[idx] = float32(-1.0)
+		verts[idx+1] = y
+		verts[idx+2] = float32(noiseGen.Eval3(x_val, y_val, z))
+		idx += 3
+
+		for x := float32(-1.0); x < 1.0; x += x_incr {
+
 			x_val := float64(scale * x)
 			y_val1 := float64(scale * y)
 			y_val2 := float64(scale * (y + y_incr))
-			verts = append(verts, x, y, float32(noiseGen.Eval2(x_val, y_val1)))
-			verts = append(verts, x, y + y_incr, float32(noiseGen.Eval2(x_val, y_val2)))
-		}
-	}
+			
+			verts[idx] = x
+			verts[idx+1] = y
+			verts[idx+2] = float32(noiseGen.Eval3(x_val, y_val1, z))
 
-	return verts
+			verts[idx+3] = x
+			verts[idx+4] = y + y_incr
+			verts[idx+5] = float32(noiseGen.Eval3(x_val, y_val2, z))
+		
+			idx += 6
+		}
+
+		//degenerate end triangle
+		verts[idx] = verts[idx - 3]
+		verts[idx + 1] = verts[idx - 2]
+		verts[idx + 2] = verts[idx - 1]
+		idx += 3
+	}
 }
