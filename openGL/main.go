@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"runtime"
-	"time"
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
@@ -12,6 +11,19 @@ const (
 	WIDTH  int = 1000
 	HEIGHT int = 1000
 )
+
+var verts = []float32 {
+	//1st triangle
+	-.4, 0.1, 0,
+	0.0, 1.0, 0,
+	.4, 0.1, 0,
+
+	//2nd triangle
+	-.4, -0.1, 0,
+	0.0, -1.0, 0,
+	.4, -0.1, 0,
+
+}
 
 func init() {
 	runtime.LockOSThread()
@@ -43,14 +55,32 @@ func main() {
 	defer program.Delete()
 
 	gl.UseProgram(program.programHandle)
-	gl.PolygonMode(gl.FRONT_AND_BACK, gl.FILL)
-	gl.ClearColor(1.0, 0, 0, 1.0)
 
+	gl.Enable(gl.DEPTH_TEST)
+	gl.DepthFunc(gl.LESS)
+	gl.ClearColor(.2, .2, .2, 1.0)
+
+	//vertex crap
+	//Pull this out into a different file
+	var vao uint32
+	gl.GenVertexArrays(1, &vao)
+	gl.BindVertexArray(vao)
+
+	var vbo uint32
+	gl.GenBuffers(1, &vbo)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, len(verts)*4, gl.Ptr(verts), gl.STATIC_DRAW)
+
+	//vertAttrib := uint32(gl.GetAttribLocation(program.programHandle, gl.Str("vert\x00")))
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, gl.PtrOffset(0))
+
+	
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-		time.Sleep(1 * time.Second)
 		gl.UseProgram(program.programHandle)
-		gl.DrawArrays(gl.TRIANGLES, 0, 3)
+		gl.BindVertexArray(vao)
+		gl.DrawArrays(gl.TRIANGLES, 0, 6)
 		window.SwapBuffers()
 		glfw.PollEvents()
 	}

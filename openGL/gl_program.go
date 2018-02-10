@@ -51,7 +51,6 @@ func NewProgram(vertShaderFile, fragShaderFile string) (*Program, error) {
 }
 
 func (p *Program) Delete() {
-	fmt.Println("Deleting program")
 	gl.DeleteShader(p.vertShaderHandle)
 	gl.DeleteShader(p.fragShaderHandle)
 	gl.DeleteProgram(p.programHandle)

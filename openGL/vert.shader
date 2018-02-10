@@ -1,9 +1,8 @@
 #version 450 core
  
+in vec3 vp;
+
 void main(void)
 {
-   const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25, 0.5, 1.0),
-                                    vec4(-0.25, -0.25, 0.5, 1.0),
-                                    vec4( 0.25, 0.25, 0.5, 1.0));
-   gl_Position = vertices[gl_VertexID];
+   gl_Position = vec4(vp, 1.0);
 }
