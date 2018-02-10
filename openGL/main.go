@@ -55,7 +55,7 @@ func main() {
 
 	gl.Enable(gl.DEPTH_TEST)
 	gl.DepthFunc(gl.LESS)
-	gl.ClearColor(1.0, .2, .2, 1.0)
+	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
 
 	//vertex crap
 	//Pull this out into a different file
@@ -113,8 +113,8 @@ func createWindow() (*glfw.Window, error) {
 func makePoints (z float64) {
 	scale := float32(1.5)
 
-	x_incr := (float32(2.0) / float32(WIDTH)) + .002
-	y_incr := (float32(2.0) / float32(HEIGHT)) + .002
+	x_incr := 3.0 * ((float32(2.0) / float32(WIDTH)))
+	y_incr := 3.0 * ((float32(2.0) / float32(HEIGHT)))
 
 	idx := 0
 	for y := float32(-1.0 + y_incr); y < 1.0 - y_incr; y += y_incr {
