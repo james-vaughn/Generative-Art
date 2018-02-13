@@ -7,6 +7,7 @@ import (
 	"github.com/go-gl/gl/v4.5-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 	noise "github.com/ojrac/opensimplex-go"
+	"github.com/go-gl/mathgl/mgl32"
 )
 
 const (
@@ -57,6 +58,13 @@ func main() {
 	gl.DepthFunc(gl.LESS)
 	gl.ClearColor(0.0, 0.0, 0.0, 0.0)
 
+	ortho := mgl32.Ortho2D(-1, 1, -1, 1)
+	orthoUniform := gl.GetUniformLocation(program.programHandle, gl.Str("ortho\x00"))
+	gl.UniformMatrix4fv(orthoUniform , 1, false, &ortho[0])
+
+	camera := mgl32.LookAtV(mgl32.Vec3{0, -1.0, 0}, mgl32.Vec3{0, 0, 0}, mgl32.Vec3{0, 0, 1})
+	cameraUniform := gl.GetUniformLocation(program.programHandle, gl.Str("camera\x00"))
+	gl.UniformMatrix4fv(cameraUniform, 1, true, &camera[0])
 	//vertex crap
 	//Pull this out into a different file
 
@@ -76,7 +84,6 @@ func main() {
 	gl.EnableVertexAttribArray(0)
 	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, gl.PtrOffset(0))
 
-	
 	for !window.ShouldClose() {
 		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 		gl.UseProgram(program.programHandle)
@@ -113,21 +120,21 @@ func createWindow() (*glfw.Window, error) {
 func makePoints (z float64) {
 	scale := float32(1.5)
 
-	x_incr := 3.0 * ((float32(2.0) / float32(WIDTH)))
-	y_incr := 3.0 * ((float32(2.0) / float32(HEIGHT)))
+	x_incr := 4.0 * ((float32(2.0) / float32(WIDTH)))
+	y_incr := 4.0 * ((float32(2.0) / float32(HEIGHT)))
 
 	idx := 0
-	for y := float32(-1.0 + y_incr); y < 1.0 - y_incr; y += y_incr {
+	for y := float32(-1.5 + y_incr); y < 1.5 - y_incr; y += y_incr {
 		//degenerate beginning triangle
 		x_val := float64(scale * -1.0)
-		y_val := float64(scale * y)		
+		y_val := float64(scale * y)
 
 		verts[idx] = float32(-1.0 + x_incr)
 		verts[idx+1] = y
 		verts[idx+2] = float32(noiseGen.Eval3(x_val, y_val, z))
 		idx += 3
 
-		for x := float32(-1.0 + x_incr); x < 1.0; x += x_incr {
+		for x := float32(-1.5 + x_incr); x < 1.5; x += x_incr {
 
 			x_val := float64(scale * x)
 			y_val1 := float64(scale * y)
