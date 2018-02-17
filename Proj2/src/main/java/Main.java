@@ -1,8 +1,5 @@
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
-import simplex3d.algorithm.noise.*;
-
-import java.io.File;
 import java.io.IOException;
 
 import static org.lwjgl.glfw.Callbacks.*;
@@ -15,6 +12,7 @@ public class Main {
     private long window;
     private final int WIDTH = 1000;
     private final int HEIGHT = 1000;
+    private final boolean WINDOWS = true;
 
     public void run() {
         init();
@@ -37,10 +35,14 @@ public class Main {
 
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+
+        //Following disabled to work on windows
+        if (WINDOWS == false) {
+            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        }
 
         window = glfwCreateWindow(WIDTH, HEIGHT, "Hail Mary", NULL, NULL);
         if ( window == NULL )

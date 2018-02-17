@@ -1,4 +1,6 @@
-#version 450 core
+#version 120 core
+//version 120 for windows
+
 out vec4 color;
 precision highp float; 
 
