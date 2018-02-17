@@ -1,4 +1,6 @@
-#version 120 core
+#version 450 core
+//version 120 for windows
+//version 450 for linux
 
 in vec3 vp;
 uniform mat4 camera;
