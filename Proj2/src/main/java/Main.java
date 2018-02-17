@@ -10,9 +10,9 @@ import static org.lwjgl.system.MemoryUtil.*;
 public class Main {
     // The window handle
     private long window;
-    private final int WIDTH = 1000;
-    private final int HEIGHT = 1000;
-    private final boolean WINDOWS = false;
+    private final int WIDTH = 1920;
+    private final int HEIGHT = 1080;
+    private final boolean WINDOWS = true;
 
     public void run() {
         init();
