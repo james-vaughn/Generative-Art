@@ -1,4 +1,5 @@
 #version 120 core
+//version 120 for windows
 
 in vec3 vp;
 uniform mat4 camera;

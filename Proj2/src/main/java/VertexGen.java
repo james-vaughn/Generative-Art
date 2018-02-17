@@ -49,7 +49,7 @@ public class VertexGen {
 
             vertices[idx] = -1.0f + x_incr;
             vertices[idx+1] = y;
-            vertices[idx+2] = (float)noise.apply(x_val, y_val, z);
+            vertices[idx+2] = .9f * (float)noise.apply(x_val, y_val, z);
             idx += 3;
 
             for (float x = -1.5f + x_incr; x < 1.5f; x += x_incr) {
@@ -60,11 +60,11 @@ public class VertexGen {
 
                 vertices[idx] = x;
                 vertices[idx+1] = y;
-                vertices[idx+2] = (float)noise.apply(x_val, y_val1, z);
+                vertices[idx+2] = .9f * (float)noise.apply(x_val, y_val1, z);
 
                 vertices[idx+3] = x;
                 vertices[idx+4] = y + y_incr;
-                vertices[idx+5] = (float)noise.apply(x_val, y_val2, z);
+                vertices[idx+5] = .9f * (float)noise.apply(x_val, y_val2, z);
 
                 idx += 6;
             }
