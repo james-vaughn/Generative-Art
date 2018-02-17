@@ -17,8 +17,16 @@ public class GL_Program {
             throw new RuntimeException("Program could not be made.");
         }
 
-        createShaderHandles(vertexShaderFile, fragmentShaderFile);
-        GL20.glLinkProgram(programHandle);
+        vertexHandle = createShaderHandle(vertexShaderFile, GL20.GL_VERTEX_SHADER);
+        fragmentHandle = createShaderHandle(fragmentShaderFile, GL20.GL_FRAGMENT_SHADER);
+
+        if (vertexHandle == 0 || fragmentHandle == 0) {
+            System.err.println("Issue creating shader handles.");
+        }
+
+        GL20.glAttachShader(programHandle, vertexHandle);
+        GL20.glAttachShader(programHandle, fragmentHandle);
+        LinkProgram();
         GL20.glValidateProgram(programHandle);
     }
 
@@ -32,16 +40,31 @@ public class GL_Program {
         return programHandle;
     }
 
-    private void createShaderHandles(String vertexShaderFile, String fragmentShaderFile) throws IOException {
-        vertexHandle = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
-        Path path = Paths.get(vertexShaderFile);
-        String vertexProg = new String(Files.readAllBytes(path));
-        GL20.glShaderSource(vertexHandle, vertexProg);
-        GL20.glCompileShader(vertexHandle);
+    private int createShaderHandle(String shaderFile, int shaderType) throws IOException {
+        int handle = GL20.glCreateShader(shaderType);
+        Path path = Paths.get(shaderFile);
+        String prog = new String(Files.readAllBytes(path));
+        GL20.glShaderSource(handle, prog);
+        GL20.glCompileShader(handle);
 
-        fragmentHandle = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-        String fragmentProg = new String(Files.readAllBytes(Paths.get(fragmentShaderFile)));
-        GL20.glShaderSource(fragmentHandle, fragmentProg);
-        GL20.glCompileShader(fragmentHandle);
+        int[] status = new int[1];
+        GL20.glGetShaderiv(handle, GL20.GL_COMPILE_STATUS, status);
+        if (status[0] == GL11.GL_FALSE) {
+            System.err.println("Issue compiling shaders:");
+            System.err.println(GL20.glGetShaderInfoLog(handle));
+        }
+
+        return handle;
+    }
+
+    private void LinkProgram() {
+        GL20.glLinkProgram(programHandle);
+
+        int[] status = new int[1];
+        GL20.glGetProgramiv(programHandle, GL20.GL_LINK_STATUS, status);
+        if (status[0] == GL11.GL_FALSE) {
+            System.err.println("Issue linking shaders to program:");
+            System.err.println(GL20.glGetProgramInfoLog(programHandle));
+        }
     }
 }

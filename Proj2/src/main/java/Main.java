@@ -15,7 +15,6 @@ public class Main {
     private long window;
     private final int WIDTH = 1000;
     private final int HEIGHT = 1000;
-    private final NoiseGen noise = new ClassicalGradientNoise(0);
 
     public void run() {
         init();
@@ -38,6 +37,10 @@ public class Main {
 
         glfwDefaultWindowHints(); // optional, the current window hints are already the default
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // the window will be resizable
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
         window = glfwCreateWindow(WIDTH, HEIGHT, "Hail Mary", NULL, NULL);
         if ( window == NULL )
@@ -62,20 +65,24 @@ public class Main {
             throw new RuntimeException("Could not create program: "+ e.getMessage());
         }
 
-        VertexGen vertGen = new VertexGen(program);
+        VertexGen vertGen = new VertexGen(program, WIDTH, HEIGHT);
+        vertGen.GenAndBindBuffers();
+
+        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthFunc(GL11.GL_LESS);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         while ( !glfwWindowShouldClose(window) ) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             GL20.glUseProgram(program.getProgramHandle());
 
-            vertGen.bindVertexArrays();
-            GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
+            vertGen.render();
 
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
 
+        vertGen.Destroy();
         program.Destroy();
     }
 
