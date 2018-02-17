@@ -7,6 +7,18 @@
     <groupId>GenerativeArt</groupId>
     <artifactId>GenerativeArt</artifactId>
     <version>1.0</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <properties>
         <lwjgl.version>3.1.6</lwjgl.version>
@@ -83,7 +95,13 @@
             <artifactId>lwjgl-stb</artifactId>
             <version>${lwjgl.version}</version>
             <classifier>${lwjgl.natives}</classifier>
+        </dependency>
 
+        <!-- Simplex noise deps-->
+        <dependency>
+            <groupId>org.simplex3d</groupId>
+            <artifactId>simplex3d-algorithm-noise_2.10</artifactId>
+            <version>0.4.6</version>
         </dependency>
     </dependencies>
 
