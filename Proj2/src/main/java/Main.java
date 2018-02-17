@@ -12,7 +12,7 @@ public class Main {
     private long window;
     private final int WIDTH = 1000;
     private final int HEIGHT = 1000;
-    private final boolean WINDOWS = true;
+    private final boolean WINDOWS = false;
 
     public void run() {
         init();
