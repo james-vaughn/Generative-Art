@@ -67,7 +67,7 @@ public class Main {
 
         while ( !glfwWindowShouldClose(window) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-            ARBShaderObjects.glUseProgramObjectARB(program.getProgramHandle());
+            GL20.glUseProgram(program.getProgramHandle());
 
             vertGen.bindVertexArrays();
             GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);

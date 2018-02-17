@@ -11,21 +11,21 @@ public class GL_Program {
     private int fragmentHandle;
 
     public GL_Program(String vertexShaderFile, String fragmentShaderFile) throws IOException {
-        programHandle = ARBShaderObjects.glCreateProgramObjectARB();
+        programHandle = GL20.glCreateProgram();
 
         if (programHandle == 0) {
             throw new RuntimeException("Program could not be made.");
         }
 
         createShaderHandles(vertexShaderFile, fragmentShaderFile);
-        ARBShaderObjects.glLinkProgramARB(programHandle);
-        ARBShaderObjects.glValidateProgramARB(programHandle);
+        GL20.glLinkProgram(programHandle);
+        GL20.glValidateProgram(programHandle);
     }
 
     public void Destroy() {
-        ARBShaderObjects.glDeleteObjectARB(vertexHandle);
-        ARBShaderObjects.glDeleteObjectARB(fragmentHandle);
-        ARBShaderObjects.glDeleteObjectARB(programHandle);
+        GL20.glDeleteProgram(vertexHandle);
+        GL20.glDeleteProgram(fragmentHandle);
+        GL20.glDeleteProgram(programHandle);
     }
 
     public int getProgramHandle() {
@@ -33,15 +33,15 @@ public class GL_Program {
     }
 
     private void createShaderHandles(String vertexShaderFile, String fragmentShaderFile) throws IOException {
-        vertexHandle = ARBShaderObjects.glCreateShaderObjectARB(ARBVertexShader.GL_VERTEX_SHADER_ARB);
+        vertexHandle = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
         Path path = Paths.get(vertexShaderFile);
         String vertexProg = new String(Files.readAllBytes(path));
-        ARBShaderObjects.glShaderSourceARB(vertexHandle, vertexProg);
-        ARBShaderObjects.glCompileShaderARB(vertexHandle);
+        GL20.glShaderSource(vertexHandle, vertexProg);
+        GL20.glCompileShader(vertexHandle);
 
-        fragmentHandle = ARBShaderObjects.glCreateShaderObjectARB(ARBFragmentShader.GL_FRAGMENT_SHADER_ARB);
+        fragmentHandle = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
         String fragmentProg = new String(Files.readAllBytes(Paths.get(fragmentShaderFile)));
-        ARBShaderObjects.glShaderSourceARB(fragmentHandle, fragmentProg);
-        ARBShaderObjects.glCompileShaderARB(fragmentHandle);
+        GL20.glShaderSource(fragmentHandle, fragmentProg);
+        GL20.glCompileShader(fragmentHandle);
     }
 }
