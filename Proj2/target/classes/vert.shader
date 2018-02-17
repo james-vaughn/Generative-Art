@@ -6,5 +6,6 @@ uniform mat4 ortho;
 
 void main(void)
 {
-   gl_Position = ortho * camera * vec4(vp, 1.0);
+   //gl_Position = ortho * camera * vec4(vp, 1.0);
+   gl_Position = vec4(vp, 1.0);
 }

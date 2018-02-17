@@ -2,6 +2,9 @@ import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import simplex3d.algorithm.noise.*;
 
+import java.io.File;
+import java.io.IOException;
+
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -44,26 +47,38 @@ public class Main {
 
         // Enable v-sync
         glfwSwapInterval(1);
+
+        // LWJGL specific
+        GL.createCapabilities();
     }
 
     private void loop() {
-        // LWJGL specific
-        GL.createCapabilities();
+        GL_Program program;
 
+        try {
+            program = new GL_Program("src/main/resources/vert.shader",
+                    "src/main/resources/frag.shader");
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create program: "+ e.getMessage());
+        }
+
+        VertexGen vertGen = new VertexGen(program);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         while ( !glfwWindowShouldClose(window) ) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            ARBShaderObjects.glUseProgramObjectARB(program.getProgramHandle());
+
+            vertGen.bindVertexArrays();
+            GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3);
 
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+
+        program.Destroy();
     }
 
-    private void ShaderStuff() {
-        //see org.lwjgl.opengl.ARBShaderObjects
-        //https://stackoverflow.com/questions/8825459/glsl-lwjgl-woes-shaders-do-nothing
-    }
     public static void main(String[] args) {
         new Main().run();
     }
