@@ -4,7 +4,7 @@ import simplex3d.algorithm.noise.NoiseGen;
 
 //http://wiki.lwjgl.org/wiki/Using_Vertex_Buffer_Objects_(VBO).html
 public class VertexGen {
-    private final NoiseGen noise = new ClassicalGradientNoise(0);
+    private final NoiseGen noise = new ClassicalGradientNoise((int)System.currentTimeMillis());
     private GL_Program program;
     private int VAOHandle;
     private int VBOHandle;
@@ -36,7 +36,7 @@ public class VertexGen {
     }
 
     private float[] genVertices(float z) {
-        float scale = 1.5f;
+        float scale = 8.0f;
 
         float x_incr = 4.0f * ((2.0f / (float) width));
         float y_incr = 4.0f * ((2.0f / (float) height));
@@ -49,7 +49,7 @@ public class VertexGen {
 
             vertices[idx] = -1.0f + x_incr;
             vertices[idx+1] = y;
-            vertices[idx+2] = (float)noise.apply(x_val, y_val, z);
+            vertices[idx+2] = clamp(.9f * (float)noise.apply(x_val, y_val, z));
             idx += 3;
 
             for (float x = -1.5f + x_incr; x < 1.5f; x += x_incr) {
@@ -60,11 +60,11 @@ public class VertexGen {
 
                 vertices[idx] = x;
                 vertices[idx+1] = y;
-                vertices[idx+2] = (float)noise.apply(x_val, y_val1, z);
+                vertices[idx+2] = clamp(.9f * (float)noise.apply(x_val, y_val1, z));
 
                 vertices[idx+3] = x;
                 vertices[idx+4] = y + y_incr;
-                vertices[idx+5] = (float)noise.apply(x_val, y_val2, z);
+                vertices[idx+5] = clamp(.9f * (float)noise.apply(x_val, y_val2, z));
 
                 idx += 6;
             }
@@ -80,7 +80,7 @@ public class VertexGen {
     }
 
     public void render() {
-        z += .01;
+        z += .02;
         genVertices(z);
 
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertices);
@@ -90,5 +90,9 @@ public class VertexGen {
 
     public void Destroy() {
         GL15.glDeleteBuffers(VBOHandle);
+    }
+
+    private float clamp(float val) {
+        return Math.max(-0.9f, Math.min(0.9f, val));
     }
 }
