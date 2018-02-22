@@ -80,7 +80,7 @@ public class VertexGen {
     }
 
     public void render() {
-        z += .02;
+        z += .03;
         genVertices(z);
 
         GL15.glBufferSubData(GL15.GL_ARRAY_BUFFER, 0, vertices);
