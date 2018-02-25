@@ -24,7 +24,7 @@ public class ParticleColor
 	public ParticleColor Mutate() {
 		var color = (float)rand.NextDouble ();
 		var sign = (float)rand.NextDouble () > .5f ? -1f : 1f;
-		var amount = (float)rand.NextDouble() * .05f;
+		var amount = (float)rand.NextDouble() * .02f;
 
 		if (color < .33f) {
 			R += sign * amount;
