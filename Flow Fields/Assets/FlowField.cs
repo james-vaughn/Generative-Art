@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,14 +7,16 @@ using UnityEngine;
 //https://docs.unity3d.com/ScriptReference/ParticleSystem.TrailModule.html
 public class FlowField : MonoBehaviour
 {
+	[SerializeField] private float alpha;
+	[SerializeField] private float baseSize;
 	private ParticleSystem ps;
 	private ParticleSystem.Particle[] particles;
 	private ParticleColor color = new ParticleColor();
-	public bool swapColors = true;
+	private System.Random rand = new System.Random (Guid.NewGuid().GetHashCode());
 
 	void Start()
 	{
-		color = color.SetRandomColor ();
+		color = color.SetRandomColor (alpha);
 
 		ps = GetComponent<ParticleSystem>();
 		particles = new ParticleSystem.Particle[ps.main.maxParticles];
@@ -49,7 +52,9 @@ public class FlowField : MonoBehaviour
 
 	void setParticleSizes(int partCount) {
 		for (int idx = 0; idx < particles.Length; idx ++) {
-			particles[idx].startSize = 2f;
+			if (particles [idx].startSize == 0f) {
+				particles [idx].startSize = baseSize * (float)rand.NextDouble ();
+			}
 		}
 		ps.SetParticles (particles, partCount);
 	}

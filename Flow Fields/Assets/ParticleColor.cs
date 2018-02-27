@@ -2,7 +2,7 @@
 
 public class ParticleColor
 {
-	private Random rand = new Random();
+	private Random rand;
 	public float R;
 	public float G;
 	public float B;
@@ -10,13 +10,14 @@ public class ParticleColor
 
 	public ParticleColor ()
 	{
+		rand = new Random(Guid.NewGuid().GetHashCode());
 	}
 
-	public ParticleColor SetRandomColor() {
+	public ParticleColor SetRandomColor(float alpha) {
 		R = (float)rand.NextDouble ();
 		G = (float)rand.NextDouble ();
 		B = (float)rand.NextDouble ();
-		A = .2f;
+		A = alpha;
 
 		return this;
 	}

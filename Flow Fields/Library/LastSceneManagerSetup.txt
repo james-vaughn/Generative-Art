@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Flow Fields.unity
+- path: Assets/Horizon And BG.unity
   isLoaded: 1
   isActive: 1
