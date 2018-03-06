@@ -22,6 +22,17 @@ public class ParticleColor
 		return this;
 	}
 
+	public ParticleColor SetRandomGrayColor(float alpha) {
+		R = (float)rand.NextDouble ();
+		G = R;
+		B = R;
+		A = alpha;
+
+		return this;
+	}
+
+
+
 	public ParticleColor Mutate() {
 		var color = (float)rand.NextDouble ();
 		var sign = (float)rand.NextDouble () > .5f ? -1f : 1f;
@@ -37,6 +48,20 @@ public class ParticleColor
 			B += sign * amount;
 			B = clamp (B);
 		}
+
+		return this;
+	}
+
+	public ParticleColor MutateGray() {
+		var sign = (float)rand.NextDouble () > .5f ? -1f : 1f;
+		var amount = (float)rand.NextDouble() * .03f;
+
+		R += sign * amount;
+		R = clamp (R);
+		G += sign * amount;
+		G = clamp (G);
+		B += sign * amount;
+		B = clamp (B);
 
 		return this;
 	}

@@ -16,7 +16,7 @@ public class FlowField : MonoBehaviour
 
 	void Start()
 	{
-		color = color.SetRandomColor (alpha);
+		color = color.SetRandomGrayColor (alpha);
 
 		ps = GetComponent<ParticleSystem>();
 		particles = new ParticleSystem.Particle[ps.main.maxParticles];
@@ -42,7 +42,7 @@ public class FlowField : MonoBehaviour
 	void setParticleColors(int partCount) {
 		for (int idx = 0; idx < partCount; idx ++) {
 			if(particles[idx].startColor.a == 0f) {
-				color.Mutate ();
+				color.MutateGray ();
 				particles[idx].startColor = new Color (color.R, color.G, color.B, color.A);
 			}
 		}
