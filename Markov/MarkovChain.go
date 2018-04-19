@@ -35,14 +35,15 @@ func (m *MarkovChain) Next() color.Color {
 		sum += freq
 	}
 
-	x := rand.Intn(sum + 1)
+	x := rand.Intn(sum)
 
 	for color, freq := range m.Chain[m.currColor] {
+		//fmt.Println(color, freq)
 		x -= freq
 
 		if x <= 0 {
 			m.currColor = color
-			//fmt.Println(color)
+			//fmt.Println(m.Chain[color])
 			return color
 		}
 	}
@@ -50,7 +51,7 @@ func (m *MarkovChain) Next() color.Color {
 	return m.currColor
 }
 
-func toRGBA(c color.Color) color.RGBA {
+func toRGBA(c color.Color) color.Color {
 	r, g, b, a := c.RGBA()
 
 	return color.RGBA{
@@ -60,3 +61,4 @@ func toRGBA(c color.Color) color.RGBA {
 		uint8(a),
 	}
 }
+

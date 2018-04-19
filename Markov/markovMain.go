@@ -7,7 +7,7 @@ import (
 	"math"
 	"os"
 
-	gg "github.com/fogleman/gg"
+	"github.com/fogleman/gg"
 )
 
 const (
@@ -17,14 +17,15 @@ const (
 
 //https://jonnoftw.github.io/2017/01/18/markov-chain-image-generation
 func main() {
-	image, err := openImage("input/test.png")
+	image, err := openImage("input/cat.png")
 
 	if err != nil {
 		log.Fatalf("Could not open image: %v", err)
 	}
 
 	markovChain := makeChain(image)
-	//fmt.Println(markovChain)
+	//markovChain.Filter()
+	//fmt.Println("Filtered")
 
 	context := gg.NewContext(WIDTH, HEIGHT)
 	drawImage(context, markovChain)
@@ -57,8 +58,7 @@ func drawImage(context *gg.Context, chain *MarkovChain) {
 
 			//fmt.Println(c)
 
-			context.SetColor(toRGBA(c))
-
+			context.SetColor(c)
 			context.SetPixel(x, y)
 		}
 	}
@@ -74,21 +74,18 @@ func makeChain(image image.Image) *MarkovChain {
 
 	for col := minY; col < maxY; col++ {
 		for row := minX; row < maxX; row++ {
-			markovChain.Add(
-				image.At(clamp(row, minX, maxX), clamp(col, minY, maxY)),
-				image.At(clamp(row, minX, maxX), clamp(col+1, minY, maxY)))
 
-			markovChain.Add(
-				image.At(clamp(row, minX, maxX), clamp(col, minY, maxY)),
-				image.At(clamp(row, minX, maxX), clamp(col-1, minY, maxY)))
+			//add neighbors
+			for horiz := col - 1; horiz <= col + 1; horiz++ {
+				for vert := row - 1; vert <= row + 1; vert++ {
+					if vert != row && horiz != col {
+						markovChain.Add(
+							image.At(clamp(row, minX, maxX - 1), clamp(col, minY, maxY - 1)),
+							image.At(clamp(vert, minX, maxX - 1), clamp(horiz, minY, maxY - 1)))
+					}
+				}
+			}
 
-			markovChain.Add(
-				image.At(clamp(row, minX, maxX), clamp(col, minY, maxY)),
-				image.At(clamp(row+1, minX, maxX), clamp(col, minY, maxY)))
-
-			markovChain.Add(
-				image.At(clamp(row, minX, maxX), clamp(col, minY, maxY)),
-				image.At(clamp(row-1, minX, maxX), clamp(col, minY, maxY)))
 		}
 	}
 
