@@ -54,7 +54,7 @@ func openImage(filename string) (image.Image, error) {
 func drawImage(context *gg.Context, chain *MarkovChain) {
 	var countToColor int = 1
 	colored := make(map[image.Point]bool)
-	toColor := make([]image.Point, 300)
+	toColor := make([]image.Point, 100)
 
 	for i:= 0; i < len(toColor); i++ {
 		toColor[i] = image.Point{rand.Intn(WIDTH), rand.Intn(HEIGHT)}
