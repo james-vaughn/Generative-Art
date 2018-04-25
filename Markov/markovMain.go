@@ -9,23 +9,24 @@ import (
 
 	"github.com/fogleman/gg"
 	"fmt"
+	"math/rand"
 )
 
 const (
-	WIDTH  = 1080
+	WIDTH  = 1920
 	HEIGHT = 1080
 )
 
 //https://jonnoftw.github.io/2017/01/18/markov-chain-image-generation
 func main() {
-	image, err := openImage("input/cat.png")
+	image, err := openImage("input/ocean.png")
 
 	if err != nil {
 		log.Fatalf("Could not open image: %v", err)
 	}
 
 	fmt.Println("Making chain")
-	markovChain := makeSecondOrderChain(image)
+	markovChain := makeChain(image)
 
 	context := gg.NewContext(WIDTH, HEIGHT)
 	fmt.Println("Drawing image")
@@ -50,17 +51,49 @@ func openImage(filename string) (image.Image, error) {
 	return img, nil
 }
 
-func drawImage(context *gg.Context, chain *SecondOrderMarkovChain) {
-	var x, y int
+func drawImage(context *gg.Context, chain *MarkovChain) {
+	var countToColor int = 1
+	colored := make(map[image.Point]bool)
+	toColor := make([]image.Point, 300)
 
-	for y = 0; y < WIDTH; y++ {
-		for x = 0; x < HEIGHT; x++ {
-			c := chain.Next()
+	for i:= 0; i < len(toColor); i++ {
+		toColor[i] = image.Point{rand.Intn(WIDTH), rand.Intn(HEIGHT)}
+	}
 
-			//fmt.Println(c)
+	coloringLoop:
+	for countToColor > 0 {
+		idx := rand.Intn(countToColor)
+		pt := toColor[idx]
+		toColor[idx] = toColor[len(toColor)-1] // Replace it with the last one.
+		toColor = toColor[:len(toColor)-1]
 
-			context.SetColor(c)
-			context.SetPixel(x, y)
+		countToColor--
+
+		//if pt.X < 0 || pt.X >= WIDTH || pt.Y < 0 || pt.Y >= HEIGHT {
+		//	continue coloringLoop
+		//}
+
+		//prevent duplicated
+		if colored[pt] == true {
+			continue coloringLoop
+		}
+
+		c := chain.Next()
+
+		context.SetColor(c)
+		context.SetPixel(pt.X, pt.Y)
+
+		colored[pt] = true
+
+		if pt.X > 0 && pt.X < WIDTH - 1 && pt.Y > 0 && pt.Y < HEIGHT - 1{
+			//append neighbors
+			toColor = append(toColor,
+				image.Point{pt.X - 1, pt.Y},
+				image.Point{pt.X + 1, pt.Y},
+				image.Point{pt.X, pt.Y - 1},
+				image.Point{pt.X, pt.Y + 1})
+
+			countToColor+=4
 		}
 	}
 }

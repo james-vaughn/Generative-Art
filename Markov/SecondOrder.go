@@ -7,8 +7,8 @@ import (
 
 type SecondOrderMarkovChain struct {
 	Chain     map[color.Color]map[color.Color]map[color.Color]int
+	prevColor color.Color
 	currColor color.Color
-	currNeighbor color.Color
 }
 
 func NewSecondOrderChain() *SecondOrderMarkovChain {
@@ -19,9 +19,9 @@ nil}
 }
 
 func (m *SecondOrderMarkovChain) Add(current, neighborInner, neighborOuter color.Color) {
-	if m.currColor == nil {
-		m.currColor = current
-		m.currNeighbor = neighborInner
+	if m.prevColor == nil {
+		m.prevColor = current
+		m.currColor = neighborInner
 	}
 
 	if m.Chain[current] == nil {
@@ -39,22 +39,22 @@ func (m *SecondOrderMarkovChain) Add(current, neighborInner, neighborOuter color
 func (m *SecondOrderMarkovChain) Next() color.Color {
 	var sum int
 
-	for _, freq := range m.Chain[m.currColor][m.currNeighbor] {
+	for _, freq := range m.Chain[m.prevColor][m.currColor] {
 		sum += freq
 	}
 
 	x := rand.Intn(sum)
 
-	for color, freq := range m.Chain[m.currColor][m.currNeighbor] {
+	for color, freq := range m.Chain[m.prevColor][m.currColor] {
 		//fmt.Println(color, freq)
 		x -= freq
 
 		if x <= 0 {
-			m.currColor = m.currNeighbor
-			m.currNeighbor = color
+			m.prevColor = m.currColor
+			m.currColor = color
 			return color
 		}
 	}
 
-	return m.currColor
+	return m.prevColor
 }
