@@ -10,23 +10,27 @@ import (
 	"github.com/fogleman/gg"
 	"fmt"
 	"math/rand"
+	"time"
 )
 
 const (
-	WIDTH  = 1920
-	HEIGHT = 1080
+	WIDTH  = 2000
+	HEIGHT = 2000
+	NUM_CENTERS = 5
 )
 
 //https://jonnoftw.github.io/2017/01/18/markov-chain-image-generation
 func main() {
-	image, err := openImage("input/ocean.png")
+	rand.Seed(time.Now().UTC().UnixNano())
+
+	image, err := openImage("input/img.png")
 
 	if err != nil {
 		log.Fatalf("Could not open image: %v", err)
 	}
 
 	fmt.Println("Making chain")
-	markovChain := makeChain(image)
+	markovChain := makeSecondOrderChain(image)
 
 	context := gg.NewContext(WIDTH, HEIGHT)
 	fmt.Println("Drawing image")
@@ -51,10 +55,10 @@ func openImage(filename string) (image.Image, error) {
 	return img, nil
 }
 
-func drawImage(context *gg.Context, chain *MarkovChain) {
+func drawImage(context *gg.Context, chain *SecondOrderMarkovChain) {
 	var countToColor int = 1
 	colored := make(map[image.Point]bool)
-	toColor := make([]image.Point, 100)
+	toColor := make([]image.Point, NUM_CENTERS)
 
 	for i:= 0; i < len(toColor); i++ {
 		toColor[i] = image.Point{rand.Intn(WIDTH), rand.Intn(HEIGHT)}
