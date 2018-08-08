@@ -25,9 +25,8 @@ func main() {
 
 	// Overlay images
 	err := overlayImages(context, []string {
-		"output/termite.png",
-		"output/termite2.png",
-		//"../output/termite3.png",
+		//"output/termite.png",
+		//"output/termite2.png",
 	})
 
 	if err != nil {
