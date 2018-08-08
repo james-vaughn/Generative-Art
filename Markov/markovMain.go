@@ -55,10 +55,7 @@ func drawImage(context *gg.Context, chain *MarkovChain) {
 		for x = 0; x < HEIGHT; x++ {
 			c := chain.Next()
 
-			//fmt.Println(c)
-
 			context.SetColor(toRGBA(c))
-
 			context.SetPixel(x, y)
 		}
 	}
