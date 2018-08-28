@@ -2,7 +2,8 @@ package main
 
 import (
 	"image"
-	"image/color"
+	"image/color" //needed to decode png
+	"log"
 	"math/rand"
 	"time"
 
@@ -36,8 +37,29 @@ func main() {
 			colors[i*WIDTH+j] = color
 		}
 	}
+
 	drawImageGradient(outputImage, colors)
+	drawSand(outputImage, sandChain())
 	Shared.SaveImage(outputImage, "position.png")
+}
+
+func sandChain() *Shared.MarkovChain {
+	images := make([]image.Image, 0)
+	imgList := []string{
+		"input/guh.png",
+	}
+
+	for _, imgURL := range imgList {
+		img, err := Shared.OpenImage(imgURL)
+
+		if err != nil {
+			log.Fatalf("Could not open image: %v", err)
+		}
+
+		images = append(images, img)
+	}
+
+	return Shared.MakeChain(images)
 }
 
 func drawImageGradient(outputImage *image.RGBA64, colors []color.Color) {
@@ -45,6 +67,19 @@ func drawImageGradient(outputImage *image.RGBA64, colors []color.Color) {
 		for j := 0; j < WIDTH; j++ {
 			color := colors[i*WIDTH+j]
 			outputImage.Set(j, i, color)
+		}
+	}
+}
+
+func drawSand(outputImage *image.RGBA64, markovChain *Shared.MarkovChain) {
+
+	for i := 0; i < HEIGHT; i++ {
+		for j := 0; j < WIDTH; j++ {
+			r, _, _, _ := outputImage.At(j, i).RGBA()
+
+			if r > 0 {
+				outputImage.Set(j, i, markovChain.Next())
+			}
 		}
 	}
 }

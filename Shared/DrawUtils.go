@@ -22,3 +22,19 @@ func SaveImage(outputImage *image.RGBA64, filename string) {
 		log.Fatal(err)
 	}
 }
+
+func OpenImage(filename string) (image.Image, error) {
+	imageReader, openErr := os.Open(filename)
+
+	if openErr != nil {
+		return nil, openErr
+	}
+
+	img, _, decodeErr := image.Decode(imageReader)
+
+	if decodeErr != nil {
+		return nil, decodeErr
+	}
+
+	return img, nil
+}

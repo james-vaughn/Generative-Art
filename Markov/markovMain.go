@@ -1,12 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	_ "image/png" //needed to decode png
 	"log"
-	"os"
-
-	"fmt"
 	"math/rand"
 	"time"
 
@@ -30,7 +28,7 @@ func main() {
 	}
 
 	for _, imgURL := range imgList {
-		img, err := openImage(imgURL)
+		img, err := Shared.OpenImage(imgURL)
 
 		if err != nil {
 			log.Fatalf("Could not open image: %v", err)
@@ -47,22 +45,6 @@ func main() {
 	drawImage(context, markovChain)
 
 	context.SavePNG("output/markov.png")
-}
-
-func openImage(filename string) (image.Image, error) {
-	imageReader, openErr := os.Open(filename)
-
-	if openErr != nil {
-		return nil, openErr
-	}
-
-	img, _, decodeErr := image.Decode(imageReader)
-
-	if decodeErr != nil {
-		return nil, decodeErr
-	}
-
-	return img, nil
 }
 
 func drawImage(context *gg.Context, chain *Shared.MarkovChain) {
