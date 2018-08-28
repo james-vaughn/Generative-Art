@@ -2,6 +2,7 @@ package Shared
 
 import (
 	"image"
+	"image/color"
 	"image/png"
 	"log"
 	"os"
@@ -37,4 +38,14 @@ func OpenImage(filename string) (image.Image, error) {
 	}
 
 	return img, nil
+}
+
+//TODO use alpha as blend percentage
+func Blend(c1, c2 color.RGBA64) color.RGBA64 {
+	return color.RGBA64{
+		R: (c1.R/2 + c2.R/2),
+		G: (c1.G/2 + c2.G/2),
+		B: (c1.B/2 + c2.B/2),
+		A: (c1.A/2 + c2.A/2),
+	}
 }

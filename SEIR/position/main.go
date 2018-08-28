@@ -27,19 +27,20 @@ func main() {
 
 	noiseGenerator := noise.NewWithSeed(rand.Int63())
 
-	colors := make([]color.Color, WIDTH*HEIGHT)
+	grid := make([]int, WIDTH*HEIGHT)
 	for i := 0; i < HEIGHT; i++ {
 		seed := SCALE_FACTOR*HEIGHT*noiseGenerator.Eval2(float64(i)*FREQ_FACTOR, 0) + HEIGHT
 		seirModel := modelFromSeed(seed)
 
 		for j := 0; j < WIDTH; j++ {
-			color := seirPointToColor(seirModel, j)
-			colors[i*WIDTH+j] = color
+			val := seirPointToVal(seirModel, j)
+			grid[i*WIDTH+j] = val
 		}
 	}
 
-	drawImageGradient(outputImage, colors)
-	drawSand(outputImage, sandChain())
+	drawBackground(outputImage)
+	drawSand(outputImage, grid, sandChain())
+	drawImageGradient(outputImage, grid)
 	Shared.SaveImage(outputImage, "position.png")
 }
 
@@ -62,24 +63,78 @@ func sandChain() *Shared.MarkovChain {
 	return Shared.MakeChain(images)
 }
 
-func drawImageGradient(outputImage *image.RGBA64, colors []color.Color) {
+func drawImageGradient(outputImage *image.RGBA64, grid []int) {
 	for i := 0; i < HEIGHT; i++ {
 		for j := 0; j < WIDTH; j++ {
-			color := colors[i*WIDTH+j]
-			outputImage.Set(j, i, color)
+			val := grid[i*WIDTH+j]
+
+			currColor := outputImage.At(j, i).(color.RGBA64)
+
+			if val == 0 {
+				//todo fix blend
+				c := color.RGBA64{0, 30000, 60000, 55000 - uint16(j*10)}
+				outputImage.Set(j, i, Shared.Blend(currColor, c))
+			}
+
+			if val == 2 {
+				c := color.RGBA64{0, 10000, 60000, 60000}
+				outputImage.Set(j, i, Shared.Blend(currColor, c))
+			}
 		}
 	}
 }
 
-func drawSand(outputImage *image.RGBA64, markovChain *Shared.MarkovChain) {
+func drawSand(outputImage *image.RGBA64, grid []int, markovChain *Shared.MarkovChain) {
 
 	for i := 0; i < HEIGHT; i++ {
 		for j := 0; j < WIDTH; j++ {
-			r, _, _, _ := outputImage.At(j, i).RGBA()
+			val := grid[i*WIDTH+j]
 
-			if r > 0 {
-				outputImage.Set(j, i, markovChain.Next())
+			currColor := outputImage.At(j, i).(color.RGBA64)
+
+			if val == 1 {
+				r, g, b, _ := markovChain.Next().RGBA()
+				sandColor := color.RGBA64{
+					uint16(r),
+					uint16(g),
+					uint16(b),
+					uint16(62000),
+				}
+
+				outputImage.Set(j, i, Shared.Blend(currColor, sandColor))
 			}
+
+			if val == 0 {
+				r, g, b, _ := markovChain.Next().RGBA()
+				sandColor := color.RGBA64{
+					uint16(r),
+					uint16(g),
+					uint16(b),
+					uint16(50000),
+				}
+
+				outputImage.Set(j, i, Shared.Blend(currColor, sandColor))
+			}
+		}
+	}
+}
+
+func drawBackground(outputImage *image.RGBA64) {
+	seed := int64(time.Now().UTC().UnixNano())
+	// good seeds: 1517604155637716269
+	noiseGen := noise.NewWithSeed(seed)
+
+	scale := 3
+
+	for y := 0; y < HEIGHT; y++ {
+		for x := 0; x < WIDTH; x++ {
+			x_val := float64(scale*x) / WIDTH
+			y_val := float64(scale*y) / HEIGHT
+
+			//calc noise but limit range of values to reduce intensity
+			n := (noiseGen.Eval2(x_val, y_val)+1)*(215/2) + 80/2
+			noiseVal := uint8(n)
+			outputImage.Set(x, y, color.RGBA{noiseVal, noiseVal, noiseVal, 255})
 		}
 	}
 }
@@ -105,31 +160,16 @@ func modelFromSeed(s float64) seir.SeirModel {
 	return model
 }
 
-func seirPointToColor(model seir.SeirModel, n int) color.Color {
+func seirPointToVal(model seir.SeirModel, n int) int {
 	const maxUint16 = 65535
 
-	r := model.S[n]
+	if model.S[n] > BOUNDARY {
+		return 1
+	}
 	//g := model.I[n]
-	b := model.R[n]
-
-	if r > BOUNDARY {
-		return color.RGBA64{65535, 0, 0, 65535}
+	if model.R[n] > BOUNDARY {
+		return 2
 	}
 
-	if b > BOUNDARY {
-		return color.RGBA64{0, 0, 65535, 65535}
-	}
-
-	return color.RGBA64{0, 65535, 0, 65535}
-	//total := float64(r + g + b)
-	//rFrac := float64(r) / total
-	//gFrac := float64(g) / total
-	//bFrac := float64(b) / total
-	//
-	//return color.RGBA64{
-	//	R: uint16(maxUint16 * rFrac),
-	//	G: uint16(maxUint16 * gFrac),
-	//	B: uint16(maxUint16 * bFrac),
-	//	A: maxUint16,
-	//}
+	return 0
 }
