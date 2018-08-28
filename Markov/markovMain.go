@@ -4,19 +4,19 @@ import (
 	"image"
 	_ "image/png" //needed to decode png
 	"log"
-	"math"
 	"os"
 
-	"github.com/fogleman/gg"
 	"fmt"
 	"math/rand"
 	"time"
-	"image/color"
+
+	"github.com/fogleman/gg"
+	"github.com/james-vaughn/Generative-Art/Shared"
 )
 
 const (
-	WIDTH  = 1000
-	HEIGHT = 1000
+	WIDTH       = 1000
+	HEIGHT      = 1000
 	NUM_CENTERS = 10
 )
 
@@ -26,17 +26,7 @@ func main() {
 
 	images := make([]image.Image, 0)
 	imgList := []string{
-		"input/img.png",
-		//"input/cat.png",
-		"input/gray.png",
-		"input/gray.png",
-		"input/gray.png",
-		"input/gray.png","input/gray.png",
-		"input/gray.png",
-		"input/gray.png",
-		"input/gray.png",
-
-
+		"input/sand.png",
 	}
 
 	for _, imgURL := range imgList {
@@ -50,7 +40,7 @@ func main() {
 	}
 
 	fmt.Println("Making chain")
-	markovChain := makeChain(images)
+	markovChain := Shared.MakeChain(images)
 
 	context := gg.NewContext(WIDTH, HEIGHT)
 	fmt.Println("Drawing image")
@@ -75,16 +65,16 @@ func openImage(filename string) (image.Image, error) {
 	return img, nil
 }
 
-func drawImage(context *gg.Context, chain *MarkovChain) {
+func drawImage(context *gg.Context, chain *Shared.MarkovChain) {
 	var countToColor int = 1
 	colored := make(map[image.Point]bool)
 	toColor := make([]image.Point, NUM_CENTERS)
 
-	for i:= 0; i < len(toColor); i++ {
+	for i := 0; i < len(toColor); i++ {
 		toColor[i] = image.Point{rand.Intn(WIDTH), rand.Intn(HEIGHT)}
 	}
 
-	coloringLoop:
+coloringLoop:
 	for countToColor > 0 {
 		idx := rand.Intn(countToColor)
 		pt := toColor[idx]
@@ -111,7 +101,7 @@ func drawImage(context *gg.Context, chain *MarkovChain) {
 		//context.SetPixel(x, y)
 		colored[pt] = true
 
-		if pt.X > 0 && pt.X < WIDTH - 1 && pt.Y > 0 && pt.Y < HEIGHT - 1{
+		if pt.X > 0 && pt.X < WIDTH-1 && pt.Y > 0 && pt.Y < HEIGHT-1 {
 			//append neighbors
 			toColor = append(toColor,
 				image.Point{pt.X - 1, pt.Y},
@@ -119,90 +109,40 @@ func drawImage(context *gg.Context, chain *MarkovChain) {
 				image.Point{pt.X, pt.Y - 1},
 				image.Point{pt.X, pt.Y + 1})
 
-			countToColor+=4
+			countToColor += 4
 		}
 	}
 }
 
-func makeChain(images []image.Image) *MarkovChain {
-	markovChain := NewChain()
-
-	for _, image := range images {
-		minY := image.Bounds().Min.Y
-		minX := image.Bounds().Min.X
-		maxY := image.Bounds().Max.Y
-		maxX := image.Bounds().Max.X
-
-		for col := minY; col < maxY; col++ {
-			for row := minX; row < maxX; row++ {
-
-				//add neighbors
-				for dH := -1; dH <= 1; dH++ {
-					for dV := -1; dV <= 1; dV++ {
-						if dV != 0 && dH != 0 {
-							markovChain.Add(
-								image.At(clamp(row, minX, maxX-1), clamp(col, minY, maxY-1)),
-								image.At(clamp(row+dV, minX, maxX-1), clamp(col+dH, minY, maxY-1)))
-						}
-					}
-				}
-
-			}
-		}
-	}
-
-	//connect the image chain nodes
-	var prevColor color.Color
-	for _, image := range images {
-		if prevColor == nil {
-			prevColor = image.At(0,0)
-			continue
-		}
-
-		currColor := image.At(0,0)
-		markovChain.Add(prevColor, currColor)
-		markovChain.Add(currColor, prevColor)
-
-		prevColor = currColor
-	}
-
-
-	return markovChain
-}
-
-func makeSecondOrderChain(image image.Image) *SecondOrderMarkovChain {
-	markovChain := NewSecondOrderChain()
-
-	minY := image.Bounds().Min.Y
-	minX := image.Bounds().Min.X
-	maxY := image.Bounds().Max.Y
-	maxX := image.Bounds().Max.X
-
-	for col := minY; col < maxY; col++ {
-		for row := minX; row < maxX; row++ {
-
-			//add neighbors
-			for dH := -1; dH <= 1; dH++ {
-				for dV := -1; dV <= 1; dV++ {
-					for dH_2 := -1; dH_2 <= 1; dH_2++ {
-						for dV_2 := -1; dV_2 <= 1; dV_2++ {
-							if dV != 0 && dH != 0 && dV_2 != 0 && dH_2 != 0{
-								markovChain.Add(
-									image.At(clamp(row, minX, maxX-1), clamp(col, minY, maxY-1)),
-									image.At(clamp(row+dV, minX, maxX-1), clamp(col+dH, minY, maxY-1)),
-									image.At(clamp(row+dV+dV_2, minX, maxX-1), clamp(col+dH+dH_2, minY, maxY-1)))
-							}
-						}
-					}
-				}
-			}
-
-		}
-	}
-
-	return markovChain
-}
-
-func clamp(x, min, max int) int {
-	return int(math.Max(float64(min), math.Min(float64(max), float64(x))))
-}
+//func makeSecondOrderChain(image image.Image) *SecondOrderMarkovChain {
+//	markovChain := NewSecondOrderChain()
+//
+//	minY := image.Bounds().Min.Y
+//	minX := image.Bounds().Min.X
+//	maxY := image.Bounds().Max.Y
+//	maxX := image.Bounds().Max.X
+//
+//	for col := minY; col < maxY; col++ {
+//		for row := minX; row < maxX; row++ {
+//
+//			//add neighbors
+//			for dH := -1; dH <= 1; dH++ {
+//				for dV := -1; dV <= 1; dV++ {
+//					for dH_2 := -1; dH_2 <= 1; dH_2++ {
+//						for dV_2 := -1; dV_2 <= 1; dV_2++ {
+//							if dV != 0 && dH != 0 && dV_2 != 0 && dH_2 != 0 {
+//								markovChain.Add(
+//									image.At(clamp(row, minX, maxX-1), clamp(col, minY, maxY-1)),
+//									image.At(clamp(row+dV, minX, maxX-1), clamp(col+dH, minY, maxY-1)),
+//									image.At(clamp(row+dV+dV_2, minX, maxX-1), clamp(col+dH+dH_2, minY, maxY-1)))
+//							}
+//						}
+//					}
+//				}
+//			}
+//
+//		}
+//	}
+//
+//	return markovChain
+//}
